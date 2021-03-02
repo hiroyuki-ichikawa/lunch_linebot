@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+  <head>
+      <title>菊川市献立表</title>
+      <base target="_top">
+  </head>
+  <body>
+      <table border="1" width="800" cellspacing="0" cellpadding="5" bordercolor="#333333">
+      <tr>
+           <th bgcolor="#EE0000"><font color="#FFFFFF">日付</font></th>
+           <th bgcolor="#EE0000" width="300"><font color="#FFFFFF">メニュー</font></th>
+           <th bgcolor="#EE0000" width="400"><font color="#FFFFFF">食品</font></th>
+           <th bgcolor="#EE0000" width="200"><font color="#FFFFFF">アレルゲン</font></th>
+      </tr>
+      <?
+        var FoodStr = "";
+        var DateStr = "";
+        var FoodStr1 = [];
+        var FoodStr2 = [];
+        var arerugen = [];
+        var FoodStr1n = 0;
+        var FoodStr2n = 0;
+        var FoodStr3 = [];
+        var FoodStr3n = 0;
+        var flg = 0;
+       
+        var myData = SpreadsheetApp.getActiveSheet().getDataRange().getValues();
+        for(var i=1;i<myData.length;i++){
+          if( myData[i][1] != "中学校" ) continue;
+        
+          // 献立
+          if( flg == 0 ){
+              DateStr = Utilities.formatDate( myData[i][2],'JST','yyyy/MM/dd' );
+              FoodStr = "";
+              FoodStr1 = [];
+              FoodStr2 = [];
+              FoodStr1n = 0;
+              FoodStr2n = 0;
+              FoodStr3 = [];
+              FoodStr3n = 0;
+              flg = 1;
+         }else{
+              var date2 = Utilities.formatDate( myData[i-1][2],'JST','yyyy/MM/dd' ) ;
+              var date1 = Utilities.formatDate( myData[i][2],'JST','yyyy/MM/dd' ) ;
+              if( date1 === date2 ){
+              }else{
+                   output.append('<tr>');
+                      output.append('<td rowspan=\"' + FoodStr1n + '\">' + DateStr + '</td>');
+                      output.append('<td rowspan=\"1\">' + FoodStr1[1] + '</td>');
+                      output.append('<td rowspan=\"1\">' + FoodStr2[1] + '</td>');
+                      output.append('<td rowspan=\"1\">' + FoodStr3[1] +  '</td>');
+                   output.append('</tr>');
+
+                   for(var jx=2;jx<=FoodStr1n;jx++){
+                      output.append('<tr>');
+                         output.append('<td>' + FoodStr1[jx] + '</td>');
+                         output.append('<td>' + FoodStr2[jx] + '</td>');
+                         output.append('<td>' + FoodStr3[jx] + '</td>');
+                      output.append('</tr>');
+                   }
+                   DateStr = Utilities.formatDate( myData[i][2],'JST','yyyy/MM/dd' );
+                   FoodStr = "";
+                   FoodStr1 = [];
+                   FoodStr2 = [];
+                   FoodStr1n = 0;
+                   FoodStr2n = 0;
+                   FoodStr3 = [];
+                   FoodStr3n = 0;
+              }
+          }
+
+          
+          if( myData[i-1][4] != myData[i][4] ){
+             FoodStr2n = 0;
+             FoodStr1n++;
+             FoodStr1[FoodStr1n] = myData[i][4];
+             FoodStr2[FoodStr1n] = [];
+          }
+          
+          if( FoodStr2n == 0 ){
+             FoodStr2[FoodStr1n] = myData[i][5];
+             if(myData[i][7] != ""){
+                 FoodStr3[FoodStr1n] = myData[i][7];
+             }else{
+                 FoodStr3[FoodStr1n] = "";
+             }
+             FoodStr2n++;
+          }else{
+             FoodStr2[FoodStr1n] = FoodStr2[FoodStr1n] + '、' + myData[i][5];
+             if(myData[i][7] != ""){
+                 if( FoodStr3[FoodStr1n] != "" ){ 
+                     FoodStr3[FoodStr1n] = FoodStr3[FoodStr1n] + '、' + myData[i][7];
+                 }else{
+                     FoodStr3[FoodStr1n] = myData[i][7];
+                 }
+             }
+          }
+                              
+          
+        }
+        
+        output.append('<tr>');
+        output.append('<td rowspan=\"' + FoodStr1n + '\">' + DateStr + '</td>');
+        output.append('<td rowspan=\"1\">' + FoodStr1[1] + '</td>');
+        output.append('<td rowspan=\"1\">' + FoodStr2[1] + '</td>');
+        output.append('<td rowspan=\"1\">' + FoodStr3[1]  + '</td>');
+        output.append('</tr>');
+                              
+        for(var jx=2;jx<=FoodStr1n;jx++){
+           output.append('<tr>');
+           output.append('<td>' + FoodStr1[jx] + '</td>');
+           output.append('<td>' + FoodStr2[jx] + '</td>');
+           output.append('<td>' + FoodStr3[jx]  + '</td>');
+           output.append('</tr>');
+        }
+      ?>
+      
+ 　　  <tr>
+      </table>
+  </body>
+</html>
+
